@@ -3,6 +3,7 @@ import numpy as np
 from game_fight import MOVES_MAP, Moves, Fight
 from util import np_state_from_game_state
 
+ILLEGAL_MOVE_REWARD = -10
 
 class FightGameEnv:
     def __init__(self):
@@ -13,16 +14,17 @@ class FightGameEnv:
     def reset(self):
         self.fight = Fight()
         self.previous_state = self.fight.get_state()
-        print(f"prev state: {self.previous_state}")
         return self.game_state()
 
     def step(self, action):
         action += 1     # we offset to be usable with the Moves enum
         self.previous_state = self.fight.get_state()
-        result = self.fight.step(Moves(action))
-        if not result:
-            return self.game_state(), -1, self.fight.done, {}
-        return self.game_state(), self.reward_from_state(), self.fight.done, {}
+        success = self.fight.step(Moves(action))
+        if not success:
+            return self.game_state(), ILLEGAL_MOVE_REWARD, self.fight.done
+        if self.fight.done:
+            print(self.fight.get_state())
+        return self.game_state(), self.reward_from_state(), self.fight.done
 
     def reward_from_state(self):
         state = self.fight.get_state()

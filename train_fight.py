@@ -12,7 +12,7 @@ env = FightGameEnv()
 
 # Define the game environment
 NUM_OF_ACTIONS = 3
-NUM_OF_EPISODES = 20
+NUM_OF_EPISODES = 5
 
 # Define the neural network model
 model = tf.keras.Sequential([
@@ -45,7 +45,7 @@ def train_step(state, action, reward, next_state, done):
 
 # Train the model
 for episode in range(NUM_OF_EPISODES):
-    print(f"Starting eposide {episode}" + str())
+    print(f"Starting eposide {episode} {'-='*100}")
     state = env.reset()
     done = False
     while not done:
@@ -54,7 +54,7 @@ for episode in range(NUM_OF_EPISODES):
         action = np.random.choice(NUM_OF_ACTIONS, p=action_probs[0])
 
         # Take the chosen action and observe the resulting state and reward
-        next_state, reward, done, _ = env.step(action)
+        next_state, reward, done = env.step(action)
         print(f"{reward=}, {done=}")
         # Train the model on the observed transition
         train_step(state, action, reward, next_state, done)
