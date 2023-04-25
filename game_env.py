@@ -32,10 +32,11 @@ class FightGameEnv:
 
         if state["npc_hp"] == 0:
             return 1
-        print(f"{p_state=}, {state=}")
+
+        print(f"current state: {state}, previous state: {p_state=}")
         hp_delta = state["player_hp"] - state["npc_hp"]
         p_hp_delta = p_state["player_hp"] - p_state["npc_hp"]
-        reward = hp_delta/10.0
+        reward = (hp_delta - p_hp_delta)/10.0 + (0.1 if hp_delta > 0 else 0)
         return reward
 
     def game_state(self):

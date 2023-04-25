@@ -11,14 +11,14 @@ fight_model_name = sys.argv[1] if len(sys.argv) > 1 else time.time()
 env = FightGameEnv()
 
 # Define the game environment
-num_actions = 2
-num_episodes = 20
+NUM_OF_ACTIONS = 3
+NUM_OF_EPISODES = 20
 
 # Define the neural network model
 model = tf.keras.Sequential([
-    tf.keras.layers.Dense(32, activation='relu', input_shape=(2,)),
+    tf.keras.layers.Dense(32, activation='relu', input_shape=(4,)),
     tf.keras.layers.Dense(32, activation='relu'),
-    tf.keras.layers.Dense(num_actions, activation='softmax')
+    tf.keras.layers.Dense(NUM_OF_ACTIONS, activation='softmax')
 ])
 
 # Define the loss function and optimizer
@@ -33,7 +33,7 @@ def train_step(state, action, reward, next_state, done):
         action_probs = model(np.array([state]), training=True)
 
         # Compute the loss between the predicted and actual action probabilities
-        action_mask = tf.one_hot(action, num_actions)
+        action_mask = tf.one_hot(action, NUM_OF_ACTIONS)
         loss = loss_fn(action, action_probs, sample_weight=reward)
 
         # Compute the gradients of the loss with respect to the model's parameters
@@ -44,14 +44,14 @@ def train_step(state, action, reward, next_state, done):
 
 
 # Train the model
-for episode in range(num_episodes):
+for episode in range(NUM_OF_EPISODES):
     print(f"Starting eposide {episode}" + str())
     state = env.reset()
     done = False
     while not done:
         # Choose an action based on the current state and the model's predictions
         action_probs = model.predict(np.array([state]))
-        action = np.random.choice(num_actions, p=action_probs[0])
+        action = np.random.choice(NUM_OF_ACTIONS, p=action_probs[0])
 
         # Take the chosen action and observe the resulting state and reward
         next_state, reward, done, _ = env.step(action)

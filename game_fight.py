@@ -11,18 +11,19 @@ INIT_ENERGY = 10
 
 MODEL_RANDOM = 'random'
 
+
 class Moves(Enum):
     PUNCH = 1
     KICK = 2
-    DEF = 3
-    REST = 4
+    # DEF = 3
+    REST = 3
 
 
 MOVES_MAP = {
     Moves.KICK: {"energy": 5, "damage": 4, "title": "Kick"},
     Moves.PUNCH: {"energy": 2, "damage": 2, "title": "Punch"},
-    Moves.DEF: {"energy": 3, "damage": 0.5, "title": "Punch"},
-    Moves.REST: {"energy": -5, "damage": 0, "title": "Punch"},
+    # Moves.DEF: {"energy": 3, "damage": 0.5, "title": "Punch"},
+    Moves.REST: {"energy": -5, "damage": 0, "title": "Rest"},
 }
 
 
@@ -41,7 +42,14 @@ class Fight:
             self.npc_model = MODEL_RANDOM
 
     def get_state(self):
-        return {"player_hp": self.player.hp, "npc_hp": self.npc.hp, "done": self.done, "winner": self.winner}
+        return {
+            "player_hp": self.player.hp,
+            "player_energy": self.player.energy,
+            "npc_hp": self.npc.hp,
+            "npc_energy": self.npc.energy,
+            "done": self.done,
+            "winner": self.winner
+        }
 
     def step(self, action):
         move = Moves(action)
@@ -57,9 +65,17 @@ class Fight:
         return self.get_state()
 
     def npc_move(self):
-        action = model_action(self.npc_model, game_state=self.get_state())
-        move = Moves(action)
-        self.npc.make_move(move, self.player)
+        success = False
+        attempts = 5
+        while not success:
+            attempts -= 1
+            if attempts == 0:
+                print(f"Model {self.npc_behavior} couldn't find a successful move for N attempts. Setting move to REST")
+                move = Moves.REST
+            else:
+                action = model_action(self.npc_model, game_state=self.get_state())
+                move = Moves(action)
+            success = self.npc.make_move(move, self.player)
 
     def check_victory(self):
         if self.npc.hp <= 0:
@@ -96,9 +112,10 @@ class Fighter:
         self.last_move = None
 
     def make_move(self, move_enum, opponent: "Fighter"):
-        print(move_enum)
+        print(f"{self.fighter_id}: attempts {move_enum}")
         move = MOVES_MAP[move_enum]
         if self.energy - move["energy"] < 0:
+            print(f"{self.fighter_id}: fails {move_enum}. Not enough energy")
             return False
 
         self.last_move = move_enum
