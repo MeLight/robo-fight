@@ -1,5 +1,5 @@
 venv/
 .idea/
 __pycache__/
-*.pickle
+
 training.txt

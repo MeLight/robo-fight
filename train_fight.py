@@ -12,7 +12,7 @@ env = FightGameEnv()
 
 # Define the game environment
 NUM_OF_ACTIONS = 3
-NUM_OF_EPISODES = 5
+NUM_OF_EPISODES = 20
 
 # Define the neural network model
 model = tf.keras.Sequential([
@@ -62,5 +62,5 @@ for episode in range(NUM_OF_EPISODES):
         # Update the current state to be the next state
         state = next_state
 
-with open(f'fight_model_{fight_model_name}.pickle', 'wb') as f:
+with open(f'models/fight_model_{fight_model_name}.pickle', 'wb') as f:
     pickle.dump(model, f)

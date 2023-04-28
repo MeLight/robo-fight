@@ -1,6 +1,6 @@
 import numpy as np
 
-from game_fight import MOVES_MAP, Moves, Fight
+from game_fight import Moves, Fight
 from util import np_state_from_game_state
 
 ILLEGAL_MOVE_REWARD = -10
@@ -8,8 +8,7 @@ ILLEGAL_MOVE_REWARD = -10
 class FightGameEnv:
     def __init__(self):
         self.fight = None
-        self.previous_state = {}
-        # pass
+        self.previous_state = None
 
     def reset(self):
         self.fight = Fight()
